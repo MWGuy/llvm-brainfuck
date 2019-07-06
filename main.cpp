@@ -2,6 +2,8 @@
 #include <fstream>
 #include "BFCompiler.h"
 #include "BFIncrement.h"
+#include "BFReed.h"
+#include "BFWrite.h"
 
 int main(int argc, char ** argv) {
 
@@ -30,17 +32,27 @@ int main(int argc, char ** argv) {
         switch (i) {
             case '+': {
                 BF::Increment increment(data.cells, data.cellIndex);
-                increment.compile(context, module, data.main_function, data.bb);
+                data.bb = increment.compile(context, module, data.main_function, data.bb);
                 break;
             }
 
             case '-': {
                 BF::Increment increment(data.cells, data.cellIndex, -1);
-                increment.compile(context, module, data.main_function, data.bb);
+                data.bb = increment.compile(context, module, data.main_function, data.bb);
                 break;
             }
 
-            default: break;
+            case ',': {
+                BF::Read read(data.cells, data.cellIndex);
+                data.bb = read.compile(context, module, data.main_function, data.bb);
+                break;
+            }
+
+            case '.': {
+                BF::Write write(data.cells, data.cellIndex);
+                data.bb = write.compile(context, module, data.main_function, data.bb);
+                break;
+            }
         }
     }
 
