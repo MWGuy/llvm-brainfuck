@@ -2,10 +2,6 @@
 #include <fstream>
 #include <vector>
 #include "BFCompiler.h"
-#include "BFIncrement.h"
-#include "BFDataIncrement.h"
-#include "BFReed.h"
-#include "BFWrite.h"
 
 int main(int argc, char ** argv) {
 
@@ -20,8 +16,8 @@ int main(int argc, char ** argv) {
         return -2;
     }
 
-    std::string source;
-    ifs >> source;
+    std::string source((std::istreambuf_iterator<char>(ifs)),
+            std::istreambuf_iterator<char>());
 
     LLVMContextRef context = LLVMContextCreate();
     LLVMModuleRef  module = LLVMModuleCreateWithNameInContext("brainfuck", context);
@@ -29,42 +25,7 @@ int main(int argc, char ** argv) {
 
     BF::declareFunctions(module);
     BF::BFMain data = BF::buildMain(context, module, builder);
-
-    std::vector<BF::Instruction *> prog;
-
-    for (char i : source) {
-        switch (i) {
-            case '+': {
-                prog.push_back(new BF::Increment(data.cells, data.cellIndex));
-                break;
-            }
-
-            case '-': {
-                prog.push_back(new BF::Increment(data.cells, data.cellIndex, -1));
-                break;
-            }
-
-            case '>': {
-                prog.push_back(new BF::DataIncrement(data.cells, data.cellIndex));
-                break;
-            }
-
-            case '<': {
-                prog.push_back(new BF::DataIncrement(data.cells, data.cellIndex, -1));
-                break;
-            }
-
-            case ',': {
-                prog.push_back(new BF::Read(data.cells, data.cellIndex));
-                break;
-            }
-
-            case '.': {
-                prog.push_back(new BF::Write(data.cells, data.cellIndex));
-                break;
-            }
-        }
-    }
+    auto prog = BF::parse(source, 0, source.length(), data);
 
     for (auto instruction: prog)
         data.bb = instruction->compile(context, module, data.main_function, data.bb);
@@ -72,6 +33,7 @@ int main(int argc, char ** argv) {
     for (auto instruction: prog)
         delete instruction;
 
+    LLVMPositionBuilderAtEnd(builder, data.bb);
     BF::buildClear(context, module, builder, data);
 
     //LLVMDumpModule(module);

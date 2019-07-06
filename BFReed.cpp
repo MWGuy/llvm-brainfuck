@@ -8,7 +8,7 @@ BF::Read::compile(
 
     LLVMValueRef getchar_function = LLVMGetNamedFunction(module, "getchar");
     LLVMValueRef input_char = LLVMBuildCall(builder, getchar_function, nullptr, 0, "input_char");
-    LLVMValueRef input_byte = LLVMBuildTrunc(builder, input_char, LLVMInt8Type(), "input_byte");
+    LLVMValueRef input_byte = LLVMBuildTrunc(builder, input_char, LLVMInt32Type(), "input_byte");
 
     LLVMBuildStore(builder, input_byte, this->cellIndex_);
 

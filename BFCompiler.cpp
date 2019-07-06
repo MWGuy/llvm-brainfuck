@@ -1,4 +1,10 @@
+#include <iostream>
 #include "BFCompiler.h"
+#include "BFIncrement.h"
+#include "BFDataIncrement.h"
+#include "BFReed.h"
+#include "BFWrite.h"
+#include "BFLoop.h"
 
 void BF::declareFunctions(LLVMModuleRef module) {
     // types
@@ -14,25 +20,25 @@ void BF::declareFunctions(LLVMModuleRef module) {
         int32_type, int32_type
     };
     LLVMTypeRef  calloc_function_type = LLVMFunctionType(int8_type_ptr, calloc_function_args_type, 2, false);
-    LLVMValueRef calloc_function = LLVMAddFunction(module, "calloc", calloc_function_type);
+    LLVMAddFunction(module, "calloc", calloc_function_type);
 
     // free
     LLVMTypeRef free_function_args_type[] = {
             int8_type_ptr
     };
     LLVMTypeRef  free_function_type = LLVMFunctionType(void_type, free_function_args_type, 1, false);
-    LLVMValueRef free_function = LLVMAddFunction(module, "free", free_function_type);
+    LLVMAddFunction(module, "free", free_function_type);
 
     // putchar
     LLVMTypeRef putchar_function_args_type[] = {
             int32_type
     };
     LLVMTypeRef  putchar_function_type = LLVMFunctionType(int32_type, putchar_function_args_type, 1, false);
-    LLVMValueRef putchar_function = LLVMAddFunction(module, "putchar", putchar_function_type);
+    LLVMAddFunction(module, "putchar", putchar_function_type);
 
     // getchar
     LLVMTypeRef  getchar_function_type = LLVMFunctionType(int32_type, nullptr, 0, false);
-    LLVMValueRef getchar_function = LLVMAddFunction(module, "getchar", getchar_function_type);
+    LLVMAddFunction(module, "getchar", getchar_function_type);
 }
 
 BF::BFMain BF::buildMain(LLVMContextRef context, LLVMModuleRef module, LLVMBuilderRef builder) {
@@ -65,4 +71,90 @@ void BF::buildClear(LLVMContextRef context, LLVMModuleRef module, LLVMBuilderRef
 
     LLVMBuildCall(builder, free_function, free_function_args, 1, "");
     LLVMBuildRet(builder, LLVMConstInt(LLVMInt32TypeInContext(context), 0, false));
+}
+
+int BF::findClose(std::string source, int index) {
+    assert((source[index] == '[') &&
+           "Looking for ']' but not starting from a '['");
+
+    int count = 0;
+
+    for (int i = index; i < source.length(); ++i) {
+        switch (source[i]) {
+            case '[':
+                count++;
+                break;
+            case ']':
+                count--;
+                break;
+        }
+
+        if (count == 0) {
+            return i;
+        }
+    }
+
+    return -1;
+}
+
+std::vector<BF::Instruction *> BF::parse(const std::string& source, int from, int to, BF::BFMain data) {
+    std::vector<BF::Instruction *> prog;
+
+    int i = from;
+    while (i < to) {
+        switch (source[i]) {
+            case '+': {
+                prog.push_back(new BF::Increment(data.cells, data.cellIndex));
+                break;
+            }
+
+            case '-': {
+                prog.push_back(new BF::Increment(data.cells, data.cellIndex, -1));
+                break;
+            }
+
+            case '>': {
+                prog.push_back(new BF::DataIncrement(data.cells, data.cellIndex));
+                break;
+            }
+
+            case '<': {
+                prog.push_back(new BF::DataIncrement(data.cells, data.cellIndex, -1));
+                break;
+            }
+
+            case ',': {
+                prog.push_back(new BF::Read(data.cells, data.cellIndex));
+                break;
+            }
+
+            case '.': {
+                prog.push_back(new BF::Write(data.cells, data.cellIndex));
+                break;
+            }
+
+            case '[': {
+                int close = BF::findClose(source, i);
+
+                if (close == -1) {
+                    std::cerr << "Unmatched '[' at position " << i << "\n";
+                    exit(-3);
+                }
+
+                prog.push_back(new BF::Loop(data.cells, data.cellIndex,
+                        parse(source, i + 1, close, data)));
+                i = close;
+                break;
+            }
+
+            case ']': {
+                std::cerr << "Unmatched ']' at position " << i << "\n";
+                exit(-3);
+            }
+        }
+
+        ++i;
+    }
+
+    return prog;
 }
