@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <vector>
 #include "BFCompiler.h"
 #include "BFIncrement.h"
 #include "BFDataIncrement.h"
@@ -29,45 +30,47 @@ int main(int argc, char ** argv) {
     BF::declareFunctions(module);
     BF::BFMain data = BF::buildMain(context, module, builder);
 
+    std::vector<BF::Instruction *> prog;
+
     for (char i : source) {
         switch (i) {
             case '+': {
-                BF::Increment increment(data.cells, data.cellIndex);
-                data.bb = increment.compile(context, module, data.main_function, data.bb);
+                prog.push_back(new BF::Increment(data.cells, data.cellIndex));
                 break;
             }
 
             case '-': {
-                BF::Increment increment(data.cells, data.cellIndex, -1);
-                data.bb = increment.compile(context, module, data.main_function, data.bb);
+                prog.push_back(new BF::Increment(data.cells, data.cellIndex, -1));
                 break;
             }
 
             case '>': {
-                BF::DataIncrement increment(data.cells, data.cellIndex);
-                data.bb = increment.compile(context, module, data.main_function, data.bb);
+                prog.push_back(new BF::DataIncrement(data.cells, data.cellIndex));
                 break;
             }
 
             case '<': {
-                BF::DataIncrement increment(data.cells, data.cellIndex, -1);
-                data.bb = increment.compile(context, module, data.main_function, data.bb);
+                prog.push_back(new BF::DataIncrement(data.cells, data.cellIndex, -1));
                 break;
             }
 
             case ',': {
-                BF::Read read(data.cells, data.cellIndex);
-                data.bb = read.compile(context, module, data.main_function, data.bb);
+                prog.push_back(new BF::Read(data.cells, data.cellIndex));
                 break;
             }
 
             case '.': {
-                BF::Write write(data.cells, data.cellIndex);
-                data.bb = write.compile(context, module, data.main_function, data.bb);
+                prog.push_back(new BF::Write(data.cells, data.cellIndex));
                 break;
             }
         }
     }
+
+    for (auto instruction: prog)
+        data.bb = instruction->compile(context, module, data.main_function, data.bb);
+
+    for (auto instruction: prog)
+        delete instruction;
 
     BF::buildClear(context, module, builder, data);
 
