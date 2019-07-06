@@ -9,7 +9,8 @@ namespace BF {
         explicit Instruction(LLVMValueRef cells, LLVMValueRef cellIndex) :
             cells_(cells), cellIndex_(cellIndex) {}
 
-        virtual LLVMBasicBlockRef compile(LLVMModuleRef module, LLVMValueRef function, LLVMBasicBlockRef block) = 0;
+        virtual LLVMBasicBlockRef compile(
+                LLVMContextRef context, LLVMModuleRef module, LLVMValueRef function, LLVMBasicBlockRef bb) = 0;
     protected:
         LLVMValueRef cells_;
         LLVMValueRef cellIndex_;

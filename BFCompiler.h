@@ -8,6 +8,7 @@ namespace BF {
         LLVMBasicBlockRef bb;
         LLVMValueRef cells;
         LLVMValueRef cellIndex;
+        LLVMValueRef main_function;
     };
 
     void declareFunctions(LLVMModuleRef module);

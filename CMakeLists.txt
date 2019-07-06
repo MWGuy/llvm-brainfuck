@@ -4,4 +4,4 @@ project(llvm_bf)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_FLAGS -lLLVM)
 
-add_executable(llvm_bf main.cpp BFCompiler.cpp BFInstruction.h BFCompiler.cpp BFCompiler.h)
+add_executable(llvm_bf main.cpp BFCompiler.cpp BFInstruction.h BFCompiler.cpp BFCompiler.h BFIncrement.cpp BFIncrement.h)

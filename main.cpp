@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include "BFCompiler.h"
+#include "BFIncrement.h"
 
 int main(int argc, char ** argv) {
 
@@ -25,7 +26,23 @@ int main(int argc, char ** argv) {
     BF::declareFunctions(module);
     BF::BFMain data = BF::buildMain(context, module, builder);
 
-    // TODO: compile here
+    for (char i : source) {
+        switch (i) {
+            case '+': {
+                BF::Increment increment(data.cells, data.cellIndex);
+                increment.compile(context, module, data.main_function, data.bb);
+                break;
+            }
+
+            case '-': {
+                BF::Increment increment(data.cells, data.cellIndex, -1);
+                increment.compile(context, module, data.main_function, data.bb);
+                break;
+            }
+
+            default: break;
+        }
+    }
 
     BF::buildClear(context, module, builder, data);
 

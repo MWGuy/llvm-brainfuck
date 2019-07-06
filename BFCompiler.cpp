@@ -53,7 +53,7 @@ BF::BFMain BF::buildMain(LLVMContextRef context, LLVMModuleRef module, LLVMBuild
     LLVMValueRef cellIndex = LLVMBuildAlloca(builder, int32_type, "cell_index_ptr");
 
     return {
-        bb, cells, cellIndex
+        bb, cells, cellIndex, main_function
     };
 }
 
