@@ -1,12 +1,12 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include "BFCompiler.h"
+#include "src/BFCompiler.h"
 
 int main(int argc, char ** argv) {
 
-    if (argc != 2) {
-        std::cerr << "Usage: llvm_bf <file.bf>" << std::endl;
+    if (argc != 3) {
+        std::cerr << "Usage: llvm_bf <file.bf> <out.ll>" << std::endl;
         return -1;
     }
 
@@ -36,8 +36,7 @@ int main(int argc, char ** argv) {
     LLVMPositionBuilderAtEnd(builder, data.bb);
     BF::buildClear(context, module, builder, data);
 
-    //LLVMDumpModule(module);
-    LLVMPrintModuleToFile(module, "test.ll", nullptr);
+    LLVMPrintModuleToFile(module, argv[2], nullptr);
 
     LLVMDisposeBuilder(builder);
     LLVMDisposeModule(module);
