@@ -2,6 +2,7 @@
 #include <fstream>
 #include "BFCompiler.h"
 #include "BFIncrement.h"
+#include "BFDataIncrement.h"
 #include "BFReed.h"
 #include "BFWrite.h"
 
@@ -38,6 +39,18 @@ int main(int argc, char ** argv) {
 
             case '-': {
                 BF::Increment increment(data.cells, data.cellIndex, -1);
+                data.bb = increment.compile(context, module, data.main_function, data.bb);
+                break;
+            }
+
+            case '>': {
+                BF::DataIncrement increment(data.cells, data.cellIndex);
+                data.bb = increment.compile(context, module, data.main_function, data.bb);
+                break;
+            }
+
+            case '<': {
+                BF::DataIncrement increment(data.cells, data.cellIndex, -1);
                 data.bb = increment.compile(context, module, data.main_function, data.bb);
                 break;
             }
