@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.14)
-project(llvm_bf)
+project(bfc)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_FLAGS -lLLVM)
 
-add_executable(llvm_bf main.cpp src/BFCompiler.cpp src/BFInstruction.h src/BFCompiler.cpp src/BFCompiler.h src/BFIncrement.cpp src/BFIncrement.h src/BFReed.cpp src/BFReed.h src/BFWrite.cpp src/BFWrite.h src/BFDataIncrement.cpp src/BFDataIncrement.h src/BFLoop.cpp src/BFLoop.h)
+add_executable(llvm_bf main.cpp BFCompiler.cpp BFInstruction.h BFCompiler.cpp BFCompiler.h BFIncrement.cpp BFIncrement.h BFReed.cpp BFReed.h BFWrite.cpp BFWrite.h BFDataIncrement.cpp BFDataIncrement.h BFLoop.cpp BFLoop.h)

@@ -1,7 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include "src/BFCompiler.h"
+#include "BFCompiler.h"
 
 int main(int argc, char ** argv) {
 
