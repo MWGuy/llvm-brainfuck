@@ -1,5 +1,5 @@
 CC=clang
-CFLAGS=-c -Wall
+CFLAGS=-c -Wall -fno-rtti
 LDFLAGS=-lLLVM
 SOURCES=main.cpp \
     BFCompiler.cpp \
