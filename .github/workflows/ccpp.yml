@@ -10,7 +10,7 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: install
-      run: apt install libllvm-dev    
+      run: sudo apt install -y libllvm-dev    
     - name: make
       run: make
     - name: test
