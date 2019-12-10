@@ -1,6 +1,6 @@
 CC=clang
 CFLAGS=-c -Wall -fno-rtti
-LDFLAGS=-lLLVM -lpthread 
+LDFLAGS=-lLLVM -lpthread -lstdc++
 SOURCES=main.cpp \
     BFCompiler.cpp \
     BFIncrement.cpp \
