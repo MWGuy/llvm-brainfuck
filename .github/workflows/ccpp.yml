@@ -10,8 +10,8 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: install
-      run: make    
-    - name: apt install libllvm-dev
+      run: apt install libllvm-dev    
+    - name: make
       run: make
     - name: test
       run: ./bfc /programms/hello.bf out.ll && clang -o hello out.ll && ./hello
